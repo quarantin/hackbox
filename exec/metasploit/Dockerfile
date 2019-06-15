@@ -2,6 +2,14 @@
 # This Docker image file encapsulates Metasploit Framework, which is distributed
 # from https://github.com/rapid7/metasploit-framework
 #
+# To run this image after installing Docker, use a command like this:
+#
+# docker run -it quarantin/metasploit
+#
+# The -p parameter exposes the ports on which you expect to receive inbound connections from
+# reverse shells and such. Once the app starts, run the desired Metasploit command, such as
+# "msfconsole" inside its container.
+#
 # After running the image, you'll have files from your Metasploit session in the ~/.msf4 and
 # /tmp/msf directories on your host. The next time you run the app, it will pick up from where
 # it left off by reading the files in those locations. If you wish to start from scratch,
@@ -10,7 +18,7 @@
 # In addition to including Metasploit Framework, the image also includes Nmap and tmux.
 #
 
-FROM quarantin/bdfproxy
+FROM bdfproxy
 MAINTAINER Corentin Delorme <codelorme@gmail.com>
 
 WORKDIR /opt
@@ -63,11 +71,9 @@ RUN ln -s /opt/msf/msf* /usr/local/bin
 VOLUME /root/.msf4/
 VOLUME /tmp/data/
 
-RUN sed -i -e 's/192.168.1.168/192.168.1.32/' -e 's/192.168.1.16/192.168.1.32/' /bdfproxy/bdfproxy.cfg
-
 # Starting script (DB + updates)
 RUN /usr/local/bin/init.sh
 
-WORKDIR /bdfproxy
-RUN echo "Please run: './bdf_proxy.py &' and then 'cd /opt/msf && msfconsole -r /bdfproxy/bdfproxy_msf_resource.rc'"
-ENTRYPOINT ["/bin/bash", "-l" ]
+ADD entrypoint.sh .
+RUN chmod a+x ./entrypoint.sh
+ENTRYPOINT ./entrypoint.sh

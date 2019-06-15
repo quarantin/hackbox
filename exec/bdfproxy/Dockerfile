@@ -1,4 +1,5 @@
 FROM ubuntu:16.04
+MAINTAINER Corentin Delorme <codelorme@gmail.com>
 
 # Install required ubuntu packages
 RUN apt-get update && apt-get -y install apt-utils autoconf curl git libc6-dev-i386 libcurl4-openssl-dev libffi-dev libjpeg8-dev libssl-dev libtool libxml2-dev libxslt1-dev openssl pkg-config python-dev python-pip unzip zlib1g-dev 
@@ -29,4 +30,8 @@ RUN gcc -c -I../lib/elf -m32 -Wall -O2 -s -o appack.o appack.c -v && gcc -m32 -W
 
 WORKDIR /bdfproxy
 
-CMD ["/bin/bash"]
+RUN sed -i -e 's/192.168.1.168/192.168.1.32/' -e 's/192.168.1.16/192.168.1.32/' bdfproxy.cfg
+
+ADD entrypoint.sh .
+RUN chmod a+x ./entrypoint.sh
+RUN ./entrypoint.sh
