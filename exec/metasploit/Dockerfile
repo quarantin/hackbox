@@ -56,8 +56,8 @@ RUN gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A
 RUN curl -sSL https://rvm.io/mpapis.asc | gpg --import
 RUN curl -L https://get.rvm.io | bash -s stable 
 RUN /bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm requirements"
-RUN /bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm install 2.3.1"
-RUN /bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm use 2.3.1 --default"
+RUN /bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm install 2.6.3"
+RUN /bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm use 2.6.3 --default"
 RUN /bin/bash -l -c ". /etc/profile.d/rvm.sh && gem install bundler"
 RUN /bin/bash -l -c ". /etc/profile.d/rvm.sh && which bundle"
 RUN /bin/bash -l -c ". /etc/profile.d/rvm.sh && bundle config --global jobs $(expr $(cat /proc/cpuinfo | grep vendor_id | wc -l) - 1)"
