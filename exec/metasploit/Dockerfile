@@ -74,6 +74,6 @@ VOLUME /tmp/data/
 # Starting script (DB + updates)
 RUN /usr/local/bin/init.sh
 
-ADD entrypoint.sh .
-RUN chmod a+x ./entrypoint.sh
-ENTRYPOINT ./entrypoint.sh
+COPY entrypoint.sh /tmp/entrypoint.sh
+
+ENTRYPOINT ["/tmp/entrypoint.sh"]
