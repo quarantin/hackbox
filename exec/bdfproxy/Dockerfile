@@ -32,6 +32,6 @@ WORKDIR /bdfproxy
 
 RUN sed -i -e 's/192.168.1.168/192.168.1.32/' -e 's/192.168.1.16/192.168.1.32/' bdfproxy.cfg
 
-ADD entrypoint.sh .
-RUN chmod a+x ./entrypoint.sh
-RUN ./entrypoint.sh
+COPY entrypoint.sh /tmp/entrypoint.sh
+
+ENTRYPOINT ["/tmp/entrypoint.sh"]
