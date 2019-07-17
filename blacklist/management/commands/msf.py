@@ -15,5 +15,4 @@ class Command(BaseCommand):
 			print('You need to start BDF Proxy first: python3 manage.py bdf_proxy')
 			return
 
-		os.chdir('/opt/msf')
-		subprocess.run([ 'msfconsole', '-r', '/home/hx/bdfproxy/bdfproxy_msf_resource.rc' ])
+		subprocess.run([ './scripts/run-metasploit.sh' ], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
