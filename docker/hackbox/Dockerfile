@@ -25,35 +25,6 @@ RUN apt-get update && apt-get --yes install apt-utils autoconf curl git libc6-de
 RUN python -m pip install --upgrade pip
 RUN python3 -m pip install --upgrade pip
 
-##############
-## BDFProxy ##
-##############
-
-# Install required pip packages
-RUN python -m pip install capstone pefile configobj mitmproxy==0.16
-
-# Clone main repo
-WORKDIR /
-RUN git clone https://github.com/secretsquirrel/bdfproxy
-
-# Init sub-modules
-WORKDIR /bdfproxy
-RUN git submodule init && git submodule update
-WORKDIR /bdfproxy/bdf/
-RUN git pull origin master
-
-# Build osslsigncode
-WORKDIR /bdfproxy/bdf/osslsigncode
-RUN ./autogen.sh && ./configure && make && make install
-
-# Install aPLib
-WORKDIR /bdfproxy/bdf/aPLib/example
-RUN gcc -c -I../lib/elf -m32 -Wall -O2 -s -o appack.o appack.c -v && gcc -m32 -Wall -O2 -s -o appack appack.o ../lib/elf/aplib.a -v && cp ./appack /usr/bin/appack
-
-WORKDIR /bdfproxy
-
-RUN sed -i -e 's/192.168.1.168/192.168.1.32/' -e 's/192.168.1.16/192.168.1.32/' bdfproxy.cfg
-
 ################
 ## Metasploit ##
 ################
@@ -106,20 +77,65 @@ RUN ln -s /opt/msf/msf* /usr/local/bin
 # Starting script (DB + updates)
 #/usr/local/bin/init.sh
 
-############
-## Django ##
-############
+#############
+## Hackbox ##
+#############
+
+# Install required pip packages
+RUN python -m pip install capstone pefile configobj mitmproxy==0.16
 
 # Install Django
 RUN python3 -m pip install django
 
-#################
-## Entry Point ##
-#################
-
+# Copy scripts
 RUN cp -a scripts /
 RUN chown -R root:root /scripts
+# TODO Move this line to top
+RUN apt-get --yes install netcat net-tools screen
 
-WORKDIR /root
+RUN sed -i "s/#startup_message off/startup_message off/" /etc/screenrc
+
+# Create user `hx`
+RUN useradd -m -k /etc/skel -s /bin/bash hx
+
+# Change directory to `hx` home
+WORKDIR /home/hx
+
+##############
+## BDFProxy ##
+##############
+
+# Clone main repo
+RUN git clone https://github.com/secretsquirrel/bdfproxy.git
+
+# Init sub-modules
+WORKDIR bdfproxy
+RUN git submodule init && git submodule update
+WORKDIR bdf
+RUN git pull origin master
+
+# Build osslsigncode
+WORKDIR osslsigncode
+RUN ./autogen.sh && ./configure && make && make install
+
+# Install aPLib
+WORKDIR ../aPLib/example
+RUN gcc -c -I../lib/elf -m32 -Wall -O2 -s -o appack.o appack.c -v && gcc -m32 -Wall -O2 -s -o appack appack.o ../lib/elf/aplib.a -v && cp ./appack /usr/bin/appack
+
+WORKDIR ../../..
+
+RUN sed -i -e 's/192.168.1.168/192.168.1.32/' -e 's/192.168.1.16/192.168.1.32/' bdfproxy.cfg
+
+RUN chown -R hx:hx .
+
+# Change user to `hx`
+USER hx
+
+WORKDIR /home/hx
+
+# Clone this repo
+RUN git clone https://github.com/quarantin/hackbox.git
+
+RUN echo ". /etc/profile.d/rvm.sh" >> .bashrc
 
 ENTRYPOINT ["/bin/bash"]
