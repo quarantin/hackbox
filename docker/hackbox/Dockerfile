@@ -98,6 +98,8 @@ RUN sed -i "s/#startup_message off/startup_message off/" /etc/screenrc
 # Create user `hx`
 RUN useradd -m -k /etc/skel -s /bin/bash hx
 
+RUN echo 'hx ALL=NOPASSWD:/etc/init.d/avahi-daemon restart' | EDITOR='tee -a' visudo
+
 # Change directory to `hx` home
 WORKDIR /home/hx
 
@@ -126,16 +128,18 @@ WORKDIR ../../..
 
 RUN sed -i -e 's/192.168.1.168/192.168.1.32/' -e 's/192.168.1.16/192.168.1.32/' bdfproxy.cfg
 
-RUN chown -R hx:hx .
-
-# Change user to `hx`
-USER hx
-
 WORKDIR /home/hx
 
 # Clone this repo
 RUN git clone https://github.com/quarantin/hackbox.git
 
+RUN chown -R hx:hx .
+
+# Change user to `hx`
+#USER hx
+
 RUN echo ". /etc/profile.d/rvm.sh" >> .bashrc
+
+RUN update-rc.d postgresql enable
 
 ENTRYPOINT ["/bin/bash"]
