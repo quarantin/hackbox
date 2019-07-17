@@ -7,7 +7,7 @@ class Command(BaseCommand):
 	help = 'Run BDF Proxy.'
 
 	def handle(self, *args, **options):
-		os.chdir('/bdfproxy')
+		os.chdir('/home/hx/bdfproxy')
 		stderrlog = open('bdfproxy-stderr.log', 'w')
 		stdoutlog = open('bdfproxy-stdout.log', 'w')
 		subprocess.run([ './bdf_proxy.py' ], stdout=stdoutlog, stderr=stderrlog)
