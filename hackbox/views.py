@@ -25,4 +25,7 @@ def index(request):
 		return HttpResponse(template.render(context, request))
 
 
-	return HttpResponse('Hack Box Index')
+	context = {}
+	template = loader.get_template('hackbox/index.html')
+
+	return HttpResponse(template.render(context, request))
