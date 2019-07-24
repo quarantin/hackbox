@@ -82,7 +82,7 @@ apt-get --yes install netcat net-tools screen
 sed -i "s/#startup_message off/startup_message off/" /etc/screenrc
 
 # Create user `hx`
-#useradd -m -k /etc/skel -s /bin/bash hx
+useradd -m -k /etc/skel -s /bin/bash hx || true
 
 # Change directory to `hx` home
 cd /home/hx
@@ -114,12 +114,9 @@ sed -i -e 's/192.168.1.168/192.168.1.32/' -e 's/192.168.1.16/192.168.1.32/' bdfp
 
 chown -R hx:hx .
 
-# Change user to `hx`
-USER hx
-
 cd /home/hx
 
 # Clone this repo
-git clone https://github.com/quarantin/hackbox.git
+sudo -u hx git clone https://github.com/quarantin/hackbox.git
 
 echo ". /etc/profile.d/rvm.sh" >> .bashrc
