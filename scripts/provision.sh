@@ -6,7 +6,7 @@ if [ "$UID" != "0" ]; then
 	exit
 fi
 
-apt-get update && apt-get --yes install apt-utils autoconf curl git libc6-dev-i386 libcurl4-openssl-dev libffi-dev libjpeg8-dev libssl-dev libtool libxml2-dev libxslt1-dev openssl pkg-config python3 python3-pip python-dev python-pip unzip zlib1g-dev
+apt-get update && apt-get --yes install apt-utils autoconf curl libc6-dev-i386 libcurl4-openssl-dev libffi-dev libjpeg8-dev libssl-dev libtool libxml2-dev libxslt1-dev openssl pkg-config python3 python3-pip python-dev python-pip unzip zlib1g-dev
 
 python -m pip install --upgrade pip
 python3 -m pip install --upgrade pip
@@ -100,10 +100,10 @@ cd /home/hx
 ##############
 
 # Clone main repo
-git clone https://github.com/secretsquirrel/bdfproxy.git
+git clone https://github.com/secretsquirrel/bdfproxy.git bdfproxy.git
 
 # Init sub-modules
-cd bdfproxy
+cd bdfproxy.git
 git submodule init && git submodule update
 cd bdf
 git pull origin master
