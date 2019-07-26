@@ -4,4 +4,4 @@
 
 cd /opt/msf
 
-msfconsole -r /home/hx/bdfproxy/bdfproxy_msf_resource.rc
+msfconsole -r /home/hx/bdfproxy.git/bdfproxy_msf_resource.rc
