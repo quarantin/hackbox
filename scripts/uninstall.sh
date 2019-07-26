@@ -33,13 +33,13 @@ rm -rf hackbox.git bdfproxy.git
 
 apt-get --yes remove netcat net-tools screen
 
-apt-get --yes remove apt-utils autoconf curl git libc6-dev-i386 libcurl4-openssl-dev libffi-dev libjpeg8-dev libssl-dev libtool libxml2-dev libxslt1-dev openssl pkg-config python3 python3-pip python-dev python-pip unzip zlib1g-dev
+apt-get --yes remove apt-utils autoconf curl libc6-dev-i386 libcurl4-openssl-dev libffi-dev libjpeg8-dev libssl-dev libtool libxml2-dev libxslt1-dev openssl pkg-config python3 python3-pip python-dev python-pip unzip zlib1g-dev
 
 # Base packages
 apt-get --yes remove \
-  git build-essential zlib1g-dev \
+  build-essential zlib1g-dev \
   libxml2 libxml2-dev libxslt-dev locate curl \
-  libreadline6-dev libcurl4-openssl-dev git-core \
+  libreadline6-dev libcurl4-openssl-dev \
   libssl-dev libyaml-dev openssl autoconf libtool \
   ncurses-dev bison curl wget xsel postgresql \
   postgresql-contrib postgresql-client libpq-dev \
