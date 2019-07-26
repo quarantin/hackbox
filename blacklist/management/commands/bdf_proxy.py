@@ -10,7 +10,7 @@ class Command(BaseCommand):
 		fin = open('/proc/sys/net/ipv4/ip_forward', 'r')
 		status = int(fin.read())
 		if status != 1:
-			print('You have to enable IPv4 forwarding. Please run the following command before proceeding:\nsudo sh -c "echo 1" > /proc/sys/net/ipv4/ip_forward')
+			print('You have to enable IPv4 forwarding. Please run the following command before proceeding:\nFor Linux:\n\tsudo sh -c "echo 1 > /proc/sys/net/ipv4/ip_forward"\n\nFor Mac OSX as root:\n\tsysctl -w net.inet.ip.forwarding=1\n\n')
 			sys.exit()
 
 	def handle(self, *args, **options):
