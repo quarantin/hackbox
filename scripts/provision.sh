@@ -129,4 +129,9 @@ cd /home/hx
 rm -rf hackbox.git
 sudo -u hx git clone https://github.com/quarantin/hackbox.git hackbox.git
 
+echo 'Patching BDFProxy...'
+cd bdfproxy.git
+patch -p1 < ../hackbox.git/patches/bdf-proxy-no-root.patch
+
+cd
 echo ". /etc/profile.d/rvm.sh" >> .bashrc

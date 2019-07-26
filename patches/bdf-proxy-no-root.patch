@@ -1,0 +1,16 @@
+diff --git a/bdf_proxy.py b/bdf_proxy.py
+index b4e9b02..f68cf84 100755
+--- a/bdf_proxy.py
++++ b/bdf_proxy.py
+@@ -859,9 +859,9 @@ EnhancedOutput.print_warning("Configuring traffic forwarding")
+ 
+ try:
+     if sys.platform == "darwin":
+-        os.system("sysctl -w net.inet.ip.forwarding=1")
++        pass #os.system("sysctl -w net.inet.ip.forwarding=1")
+     elif sys.platform.startswith("linux"):
+-        os.system("echo 1 > /proc/sys/net/ipv4/ip_forward")
++        pass #os.system("echo 1 > /proc/sys/net/ipv4/ip_forward")
+ except Exception as e:
+     EnhancedOutput.print_error(e)
+     sys.exit(1)
