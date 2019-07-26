@@ -36,7 +36,7 @@ curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/scripts/init.sh
 
 if [ -d '/opt/msf' ]; then
 	cd msf
-	git fetch && get pull
+	git fetch && git pull
 else
 	# Get Metasploit
 	git clone https://github.com/rapid7/metasploit-framework.git msf
