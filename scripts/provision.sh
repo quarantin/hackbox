@@ -34,9 +34,14 @@ curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/scripts/init.sh
   chmod a+xr /usr/local/bin/init.sh && \
   curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/conf/tmux.conf --output /root/.tmux.conf
 
-# Get Metasploit
-git clone https://github.com/rapid7/metasploit-framework.git msf
-cd msf
+if [ -d '/opt/msf' ]; then
+	cd msf
+	git fetch && get pull
+else
+	# Get Metasploit
+	git clone https://github.com/rapid7/metasploit-framework.git msf
+	cd msf
+fi
 
 # Install PosgreSQL
 curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/scripts/db.sql --output /tmp/db.sql
