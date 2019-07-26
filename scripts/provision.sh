@@ -100,6 +100,7 @@ cd /home/hx
 ##############
 
 # Clone main repo
+rm -rf bdfproxy.git
 git clone https://github.com/secretsquirrel/bdfproxy.git bdfproxy.git
 
 # Init sub-modules
@@ -125,6 +126,7 @@ chown -R hx:hx .
 cd /home/hx
 
 # Clone this repo
-sudo -u hx git clone https://github.com/quarantin/hackbox.git
+rm -rf hackbox.git
+sudo -u hx git clone https://github.com/quarantin/hackbox.git hackbox.git
 
 echo ". /etc/profile.d/rvm.sh" >> .bashrc
