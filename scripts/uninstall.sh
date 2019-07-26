@@ -37,7 +37,7 @@ apt-get --yes remove apt-utils autoconf curl git libc6-dev-i386 libcurl4-openssl
 
 # Base packages
 apt-get --yes remove \
-  git build-essential zlib1g zlib1g-dev \
+  git build-essential zlib1g-dev \
   libxml2 libxml2-dev libxslt-dev locate curl \
   libreadline6-dev libcurl4-openssl-dev git-core \
   libssl-dev libyaml-dev openssl autoconf libtool \
