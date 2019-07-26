@@ -7,7 +7,7 @@ class Command(BaseCommand):
 	help = 'Run Metasploit Framework .'
 
 	def check_bdf_resource_file(self):
-		return os.path.exists('/home/hx/bdfproxy/bdfproxy_msf_resource.rc')
+		return os.path.exists('/home/hx/bdfproxy.git/bdfproxy_msf_resource.rc')
 
 	def handle(self, *args, **options):
 
