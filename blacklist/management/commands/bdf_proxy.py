@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
-import os, subprocess
+import os, sys, subprocess
 
 class Command(BaseCommand):
 
