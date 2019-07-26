@@ -62,8 +62,13 @@ curl -L https://get.rvm.io | bash -s stable
 /bin/bash -l -c ". /etc/profile.d/rvm.sh && bundle install"
 
 # Symlink tools to $PATH
-for i in `ls /opt/msf/tools/*/*`; do ln -s $i /usr/local/bin/; done
-ln -s /opt/msf/msf* /usr/local/bin
+for i in `ls /opt/msf/tools/*/*`; do
+	stat -L $i &> /dev/null
+	if [ "${?}" -ne "0" ]; then
+		ln -s $i /usr/local/bin/
+	fi
+done
+ln -s /opt/msf/msf* /usr/local/bin || true
 
 # Starting script (DB + updates)
 #/usr/local/bin/init.sh
