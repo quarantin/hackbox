@@ -130,3 +130,8 @@ ln -f -s /opt/msf/msf* /usr/local/bin
 #/usr/local/bin/init.sh
 }
 
+
+#########
+## End ##
+#########
+echo Success.
