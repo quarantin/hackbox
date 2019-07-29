@@ -26,6 +26,8 @@ SECRET_KEY = 'ns-cscf=m8#4=s!x_88(3inukrrwj%s%!jt9mh8z!*evk-*1fj'
 DEBUG = True
 
 ALLOWED_HOSTS = [
+	'hackbox',
+	'hackbox.local',
 	'fr-fr.facebook.com',
 	'www.facebook.com',
 	'facebook.com',
