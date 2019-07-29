@@ -109,27 +109,27 @@ else
 	cd msf
 fi
 
-cd /home/${HX}
-
 # Install PosgreSQL
 sudo -u postgres curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/scripts/db.sql --output /tmp/db.sql
 /etc/init.d/postgresql start && su postgres -c "psql -f /tmp/db.sql"
 curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/conf/database.yml --output /opt/msf/config/database.yml
 
-# RVM and dependencies
-sudo -u ${HX} gpg --keyserver hkp://pool.sks-keyservers.net:80 --recv-keys 0x409B6B1796C275462A1703113804BB82D39DC0E3 0x7D2BAF1CF37B13E2069D6956105BD0E739499BDB
-curl -sSL https://rvm.io/mpapis.asc | sudo -u ${HX} gpg --import
-curl -L https://get.rvm.io | bash -s stable 
-sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm install 2.6.2"
-sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm requirements"
-sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm install 2.6.3"
-sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm use 2.6.3 --default"
-sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && gem install bundler"
-sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && which bundle"
-sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && bundle config --global jobs $(expr $(cat /proc/cpuinfo | grep vendor_id | wc -l) - 1)"
-sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && bundle install"
+cd /home/${HX}
 
-sudo -u ${HX} sh -c "echo '. /etc/profile.d/rvm.sh'" >> .bashrc
+# RVM and dependencies
+gpg --keyserver hkp://pool.sks-keyservers.net:80 --recv-keys 0x409B6B1796C275462A1703113804BB82D39DC0E3 0x7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+curl -sSL https://rvm.io/mpapis.asc | gpg --import
+curl -L https://get.rvm.io | bash -s stable 
+/bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm install 2.6.2"
+/bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm requirements"
+/bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm install 2.6.3"
+/bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm use 2.6.3 --default"
+/bin/bash -l -c ". /etc/profile.d/rvm.sh && gem install bundler"
+/bin/bash -l -c ". /etc/profile.d/rvm.sh && which bundle"
+/bin/bash -l -c ". /etc/profile.d/rvm.sh && bundle config --global jobs $(expr $(cat /proc/cpuinfo | grep vendor_id | wc -l) - 1)"
+/bin/bash -l -c ". /etc/profile.d/rvm.sh && bundle install"
+
+sh -c "echo '. /etc/profile.d/rvm.sh'" >> .bashrc
 
 # Symlink tools to $PATH
 for i in `ls /opt/msf/tools/*/*`; do
