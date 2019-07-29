@@ -38,7 +38,7 @@ cd /home/${HX}
 rm -rf hackbox.git
 sudo -u ${HX} git clone https://github.com/quarantin/hackbox.git hackbox.git
 cd hackbox.git
-python3 ./scripts/set-hostname.sh ${HOST}
+./scripts/set-hostname.sh ${HOST}
 sudo -u ${HX} python3 -m pip install -r requirements.txt
 sudo -u ${HX} python3 manage.py makemigrations
 sudo -u ${HX} python3 manage.py migrate --run-syncdb
