@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+HOST=hackbox.local
+
 if [ "$UID" != "0" ]; then
 	echo "This script needs root privileges."
 	exit
@@ -83,6 +85,7 @@ cd /home/hx
 rm -rf hackbox.git
 sudo -u hx git clone https://github.com/quarantin/hackbox.git hackbox.git
 cd hackbox.git
+./scripts/set-hostname.sh ${HOST}
 sudo -u python3 manage.py makemigrations
 sudo -u python3 manage.py migrate --run-syncdb
 cd ..
