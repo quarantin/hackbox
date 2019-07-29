@@ -79,19 +79,31 @@ useradd -m -k /etc/skel -s /bin/bash hx || true
 # Change directory to `hx` home
 cd /home/hx
 
+# Clone this repo
+rm -rf hackbox.git
+sudo -u hx git clone https://github.com/quarantin/hackbox.git hackbox.git
+cd hackbox.git
+sudo -u python3 manage.py makemigrations
+sudo -u python3 manage.py migrate --run-syncdb
+cd ..
+
 ##############
 ## BDFProxy ##
 ##############
 
 # Clone main repo
 rm -rf bdfproxy.git
-git clone https://github.com/secretsquirrel/bdfproxy.git bdfproxy.git
+sudo -u hx git clone https://github.com/secretsquirrel/bdfproxy.git bdfproxy.git
+
+# Patching BDFProxy
+cd bdfproxy.git
+echo 'Patching BDFProxy...'
+patch -p1 < ../hackbox.git/patches/bdf-proxy-no-root.patch
 
 # Init sub-modules
-cd bdfproxy.git
-git submodule init && git submodule update
+sudo -u hx git submodule init && sudo -u hx git submodule update
 cd bdf
-git pull origin master
+sudo -u hx git pull origin master
 
 # Build osslsigncode
 cd osslsigncode
@@ -104,18 +116,6 @@ gcc -c -I../lib/elf -m32 -Wall -O2 -s -o appack.o appack.c -v && gcc -m32 -Wall 
 cd ../../..
 
 sed -i -e 's/192.168.1.168/192.168.1.32/' -e 's/192.168.1.16/192.168.1.32/' bdfproxy.cfg
-
-chown -R hx:hx .
-
-cd /home/hx
-
-# Clone this repo
-rm -rf hackbox.git
-sudo -u hx git clone https://github.com/quarantin/hackbox.git hackbox.git
-
-echo 'Patching BDFProxy...'
-cd bdfproxy.git
-patch -p1 < ../hackbox.git/patches/bdf-proxy-no-root.patch
 
 cd
 echo ". /etc/profile.d/rvm.sh" >> .bashrc
