@@ -14,6 +14,8 @@ fi
 ## System ##
 ############
 
+INSTALL_SYSTEM(){
+
 # Create dedicated hx user
 getent passwd ${HX} &>/dev/null || useradd -m -k /etc/skel -s /bin/bash ${HX}
 
@@ -27,10 +29,14 @@ sudo -u ${HX} python3 -m pip install --upgrade pip
 # Disable GNU screen startup message because it's annoying
 sed -i "s/#startup_message off/startup_message off/" /etc/screenrc
 
+}
+
 
 #############
 ## Hackbox ##
 #############
+
+INSTALL_HACKBOX(){
 
 cd /home/${HX}
 
@@ -44,10 +50,14 @@ sudo -u ${HX} python3 manage.py makemigrations
 sudo -u ${HX} python3 manage.py migrate --run-syncdb
 sudo -u ${HX} python3 ./scripts/createsuperuser.py
 
+}
+
 
 ##############
 ## BDFProxy ##
 ##############
+
+INSTALL_BDFPROXY(){
 
 cd /home/${HX}
 
@@ -79,6 +89,8 @@ sudo -u ${HX} ./autogen.sh && sudo -u ${HX} ./configure && sudo -u ${HX} make &&
 cd ../aPLib/example
 sudo -u ${HX} gcc -c -I../lib/elf -m32 -Wall -O2 -s -o appack.o appack.c -v && gcc -m32 -Wall -O2 -s -o appack appack.o ../lib/elf/aplib.a -v && cp ./appack /usr/bin/appack
 
+}
+
 
 ################
 ## Metasploit ##
@@ -97,25 +109,26 @@ else
 	cd msf
 fi
 
+cd /home/${HX}
+
 # Install PosgreSQL
-curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/scripts/db.sql --output /tmp/db.sql
+sudo -u posgres curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/scripts/db.sql --output /tmp/db.sql
 /etc/init.d/postgresql start && su postgres -c "psql -f /tmp/db.sql"
 curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/conf/database.yml --output /opt/msf/config/database.yml
 
 # RVM and dependencies
-gpg --keyserver hkp://pool.sks-keyservers.net:80 --recv-keys 0x409B6B1796C275462A1703113804BB82D39DC0E3 0x7D2BAF1CF37B13E2069D6956105BD0E739499BDB
-curl -sSL https://rvm.io/mpapis.asc | gpg --import
+sudo -u ${HX} gpg --keyserver hkp://pool.sks-keyservers.net:80 --recv-keys 0x409B6B1796C275462A1703113804BB82D39DC0E3 0x7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+curl -sSL https://rvm.io/mpapis.asc | sudo -u ${HX} gpg --import
 curl -L https://get.rvm.io | bash -s stable 
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm install 2.6.2"
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm requirements"
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm install 2.6.3"
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm use 2.6.3 --default"
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && gem install bundler"
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && which bundle"
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && bundle config --global jobs $(expr $(cat /proc/cpuinfo | grep vendor_id | wc -l) - 1)"
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && bundle install"
+sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm install 2.6.2"
+sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm requirements"
+sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm install 2.6.3"
+sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm use 2.6.3 --default"
+sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && gem install bundler"
+sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && which bundle"
+sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && bundle config --global jobs $(expr $(cat /proc/cpuinfo | grep vendor_id | wc -l) - 1)"
+sudo -u ${HX} /bin/bash -l -c ". /etc/profile.d/rvm.sh && bundle install"
 
-cd /home/${HX}
 sudo -u ${HX} sh -c "echo '. /etc/profile.d/rvm.sh'" >> .bashrc
 
 # Symlink tools to $PATH
@@ -131,7 +144,16 @@ ln -f -s /opt/msf/msf* /usr/local/bin
 }
 
 
-#########
-## End ##
-#########
+##########
+## Main ##
+##########
+
+INSTALL_SYSTEM
+
+INSTALL_HACKBOX
+
+INSTALL_BDFPROXY
+
+INSTALL_METASPLOIT
+
 echo Success.
