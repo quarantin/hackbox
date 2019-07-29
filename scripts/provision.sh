@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+HX=hx
 HOST=hackbox.local
 
 if [ "$UID" != "0" ]; then
@@ -8,9 +9,8 @@ if [ "$UID" != "0" ]; then
 	exit
 fi
 
-apt-get update &&
+apt-get update && \
 apt-get --yes install apt-utils autoconf avahi-daemon bison build-essential curl git git-core inotify-tool libapr1 libaprutil1 libc6-dev-i386 libcurl4-openssl-dev libffi-dev libgmp3-dev libjpeg8-dev libpcap-dev libpq-dev libreadline6-dev libsqlite3-dev libssl-dev libsvn1 libtool libxml2 libxml2-dev libxslt1-dev libyaml-dev locate nasm ncurses-dev netcat net-tools nmap openssl pkg-config postgresql postgresql-client postgresql-contrib python3 python3-pip python-dev python-pip screen unzip vim wget xsel zlib1g zlib1g-dev
-
 
 python -m pip install --upgrade pip
 python3 -m pip install --upgrade pip
@@ -19,6 +19,7 @@ python3 -m pip install --upgrade pip
 ## Metasploit ##
 ################
 
+INSTALL_METASPLOIT(){
 cd /opt
 
 curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/scripts/init.sh --output /usr/local/bin/init.sh && chmod a+xr /usr/local/bin/init.sh
@@ -56,38 +57,29 @@ done
 
 ln -f -s /opt/msf/msf* /usr/local/bin
 
+# TODO
 # Starting script (DB + updates)
 #/usr/local/bin/init.sh
+}
 
 #############
 ## Hackbox ##
 #############
 
-# Install required pip packages
-python -m pip install capstone pefile configobj mitmproxy==0.16
-
-# Install Django
-python3 -m pip install django
-
-# Copy scripts
-cp -a scripts /
-chown -R root:root /scripts
-
 sed -i "s/#startup_message off/startup_message off/" /etc/screenrc
 
-# Create user `hx`
-useradd -m -k /etc/skel -s /bin/bash hx || true
-
-# Change directory to `hx` home
-cd /home/hx
+# Create dedicated user
+getent passwd ${HX} &>/dev/null || useradd -m -k /etc/skel -s /bin/bash ${HX}
+cd /home/${HX}
 
 # Clone this repo
 rm -rf hackbox.git
-sudo -u hx git clone https://github.com/quarantin/hackbox.git hackbox.git
+sudo -u ${HX} git clone https://github.com/quarantin/hackbox.git hackbox.git
 cd hackbox.git
 ./scripts/set-hostname.sh ${HOST}
-sudo -u python3 manage.py makemigrations
-sudo -u python3 manage.py migrate --run-syncdb
+sudo -u ${HX} python3 -m pip install -r requirements.txt
+sudo -u ${HX} python3 manage.py makemigrations
+sudo -u ${HX} python3 manage.py migrate --run-syncdb
 cd ..
 
 ##############
@@ -96,29 +88,30 @@ cd ..
 
 # Clone main repo
 rm -rf bdfproxy.git
-sudo -u hx git clone https://github.com/secretsquirrel/bdfproxy.git bdfproxy.git
+sudo -u ${HX} git clone https://github.com/secretsquirrel/bdfproxy.git bdfproxy.git
+cd bdfproxy.git
+sudo -u ${HX} python -m pip install -r requirements.txt
 
 # Patching BDFProxy
-cd bdfproxy.git
 echo 'Patching BDFProxy...'
-patch -p1 < ../hackbox.git/patches/bdf-proxy-no-root.patch
+sudo -u ${HX} patch -p1 < ../hackbox.git/patches/bdf-proxy-no-root.patch
 
 # Init sub-modules
-sudo -u hx git submodule init && sudo -u hx git submodule update
+sudo -u ${HX} git submodule init && sudo -u ${HX} git submodule update
 cd bdf
-sudo -u hx git pull origin master
+sudo -u ${HX} git pull origin master
 
 # Build osslsigncode
 cd osslsigncode
-./autogen.sh && ./configure && make && make install
+sudo -u ${HX} ./autogen.sh && sudo -u ${HX} ./configure && sudo -u ${HX} make && make install
 
 # Install aPLib
 cd ../aPLib/example
-gcc -c -I../lib/elf -m32 -Wall -O2 -s -o appack.o appack.c -v && gcc -m32 -Wall -O2 -s -o appack appack.o ../lib/elf/aplib.a -v && cp ./appack /usr/bin/appack
+sudo -u ${HX} gcc -c -I../lib/elf -m32 -Wall -O2 -s -o appack.o appack.c -v && gcc -m32 -Wall -O2 -s -o appack appack.o ../lib/elf/aplib.a -v && cp ./appack /usr/bin/appack
 
 cd ../../..
 
-sed -i -e 's/192.168.1.168/192.168.1.32/' -e 's/192.168.1.16/192.168.1.32/' bdfproxy.cfg
+sudo -u ${HX} sed -i -e 's/192.168.1.168/192.168.1.32/' -e 's/192.168.1.16/192.168.1.32/' bdfproxy.cfg
 
 cd
 echo ". /etc/profile.d/rvm.sh" >> .bashrc
