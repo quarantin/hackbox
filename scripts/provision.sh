@@ -55,7 +55,7 @@ cd /home/${HX}
 rm -rf bdfproxy.git
 sudo -u ${HX} git clone https://github.com/secretsquirrel/bdfproxy.git bdfproxy.git
 cd bdfproxy.git
-sudo -u ${HX} cp ../hackbox.git/bdf-requirements.txt requirements.txt
+sudo -u ${HX} cp ../hackbox.git/bdfproxy-requirements.txt requirements.txt
 sudo -u ${HX} python -m pip install -r requirements.txt
 
 # TODO Fix this
