@@ -6,7 +6,9 @@ if [ "$UID" != "0" ]; then
 	exit
 fi
 
-apt-get update && apt-get --yes install apt-utils autoconf curl libc6-dev-i386 libcurl4-openssl-dev libffi-dev libjpeg8-dev libssl-dev libtool libxml2-dev libxslt1-dev openssl pkg-config python3 python3-pip python-dev python-pip unzip zlib1g-dev
+apt-get update &&
+apt-get --yes install apt-utils autoconf avahi-daemon bison build-essential curl git git-core inotify-tool libapr1 libaprutil1 libc6-dev-i386 libcurl4-openssl-dev libffi-dev libgmp3-dev libjpeg8-dev libpcap-dev libpq-dev libreadline6-dev libsqlite3-dev libssl-dev libsvn1 libtool libxml2 libxml2-dev libxslt1-dev libyaml-dev locate nasm ncurses-dev netcat net-tools nmap openssl pkg-config postgresql postgresql-client postgresql-contrib python3 python3-pip python-dev python-pip screen unzip vim wget xsel zlib1g zlib1g-dev
+
 
 python -m pip install --upgrade pip
 python3 -m pip install --upgrade pip
@@ -17,23 +19,7 @@ python3 -m pip install --upgrade pip
 
 cd /opt
 
-# Base packages
-apt-get -y install \
-  git build-essential zlib1g zlib1g-dev \
-  libxml2 libxml2-dev libxslt-dev locate curl \
-  libreadline6-dev libcurl4-openssl-dev git-core \
-  libssl-dev libyaml-dev openssl autoconf libtool \
-  ncurses-dev bison curl wget xsel postgresql \
-  postgresql-contrib postgresql-client libpq-dev \
-  libapr1 libaprutil1 libsvn1 \
-  libpcap-dev libsqlite3-dev libgmp3-dev \
-  nasm tmux vim nmap inotify-tools
-
-# startup script and tmux configuration file
-curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/scripts/init.sh --output /usr/local/bin/init.sh && \
-  chmod a+xr /usr/local/bin/init.sh && \
-  curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/conf/tmux.conf --output /root/.tmux.conf
-
+curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/scripts/init.sh --output /usr/local/bin/init.sh && chmod a+xr /usr/local/bin/init.sh
 if [ -d '/opt/msf' ]; then
 	cd msf
 	git fetch && git pull
@@ -84,8 +70,6 @@ python3 -m pip install django
 # Copy scripts
 cp -a scripts /
 chown -R root:root /scripts
-# TODO Move this line to top
-apt-get --yes install netcat net-tools screen
 
 sed -i "s/#startup_message off/startup_message off/" /etc/screenrc
 
