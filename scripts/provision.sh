@@ -18,7 +18,7 @@ fi
 getent passwd ${HX} &>/dev/null || useradd -m -k /etc/skel -s /bin/bash ${HX}
 
 # Install needed system packages
-apt-get update && apt-get --yes install apt-utils autoconf avahi-daemon bison build-essential curl git git-core inotify-tool libapr1 libaprutil1 libc6-dev-i386 libcurl4-openssl-dev libffi-dev libgmp3-dev libjpeg8-dev libpcap-dev libpq-dev libreadline6-dev libsqlite3-dev libssl-dev libsvn1 libtool libxml2 libxml2-dev libxslt1-dev libyaml-dev locate nasm ncurses-dev netcat net-tools nmap openssl pkg-config postgresql postgresql-client postgresql-contrib python3 python3-pip python-dev python-pip screen unzip vim wget xsel zlib1g zlib1g-dev
+apt-get update && apt-get --yes install apt-utils autoconf avahi-daemon bison build-essential curl git git-core inotify-tools libapr1 libaprutil1 libc6-dev-i386 libcurl4-openssl-dev libffi-dev libgmp3-dev libjpeg8-dev libpcap-dev libpq-dev libreadline6-dev libsqlite3-dev libssl-dev libsvn1 libtool libxml2 libxml2-dev libxslt1-dev libyaml-dev locate nasm ncurses-dev netcat net-tools nmap openssl pkg-config postgresql postgresql-client postgresql-contrib python3 python3-pip python-dev python-pip screen unzip vim wget xsel zlib1g zlib1g-dev
 
 # Upgrade pip for both python2 and python3
 python -m pip install --upgrade pip
