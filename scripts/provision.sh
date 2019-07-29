@@ -112,7 +112,7 @@ fi
 cd /home/${HX}
 
 # Install PosgreSQL
-sudo -u posgres curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/scripts/db.sql --output /tmp/db.sql
+sudo -u postgres curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/scripts/db.sql --output /tmp/db.sql
 /etc/init.d/postgresql start && su postgres -c "psql -f /tmp/db.sql"
 curl -sSL https://github.com/REMnux/docker/raw/master/metasploit/conf/database.yml --output /opt/msf/config/database.yml
 
