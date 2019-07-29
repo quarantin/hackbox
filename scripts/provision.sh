@@ -18,6 +18,7 @@ INSTALL_SYSTEM(){
 
 # Create dedicated hx user
 getent passwd ${HX} &>/dev/null || useradd -m -k /etc/skel -s /bin/bash ${HX}
+gpasswd -a ${HX} rvm
 
 # Install needed system packages
 apt-get update && apt-get --yes install apt-utils autoconf avahi-daemon bison build-essential curl git git-core inotify-tools libapr1 libaprutil1 libc6-dev-i386 libcurl4-openssl-dev libffi-dev libgmp3-dev libjpeg8-dev libpcap-dev libpq-dev libreadline6-dev libsqlite3-dev libssl-dev libsvn1 libtool libxml2 libxml2-dev libxslt1-dev libyaml-dev locate nasm ncurses-dev netcat net-tools nmap openssl pkg-config postgresql postgresql-client postgresql-contrib python3 python3-pip python-dev python-pip screen unzip vim wget xsel zlib1g zlib1g-dev
@@ -125,12 +126,10 @@ curl -L https://get.rvm.io | bash -s stable
 rvm requirements
 rvm install 2.6.3
 rvm use 2.6.3 --default
-gem install bundler
-which bundle
-bundle config --global jobs $(expr $(cat /proc/cpuinfo | grep vendor_id | wc -l) - 1)
+sudo -u ${HX} gem install bundler
+sudo -u ${HX} bundle config --global jobs $(expr $(cat /proc/cpuinfo | grep vendor_id | wc -l) - 1)
 sudo -u ${HX} bundle install
-
-sh -c "echo '. /etc/profile.d/rvm.sh'" >> .bashrc
+sudo -u ${HX} sh -c "echo '. /etc/profile.d/rvm.sh'" >> .bashrc
 
 # Symlink tools to $PATH
 for i in `ls /opt/msf/tools/*/*`; do
