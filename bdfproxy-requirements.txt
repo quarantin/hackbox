@@ -1,4 +1,4 @@
-mitmproxy=0.17
+mitmproxy>=0.11,<=0.17
 configobj  
 capstone
 pefile
