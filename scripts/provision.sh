@@ -9,11 +9,75 @@ if [ "$UID" != "0" ]; then
 	exit
 fi
 
-apt-get update && \
-apt-get --yes install apt-utils autoconf avahi-daemon bison build-essential curl git git-core inotify-tool libapr1 libaprutil1 libc6-dev-i386 libcurl4-openssl-dev libffi-dev libgmp3-dev libjpeg8-dev libpcap-dev libpq-dev libreadline6-dev libsqlite3-dev libssl-dev libsvn1 libtool libxml2 libxml2-dev libxslt1-dev libyaml-dev locate nasm ncurses-dev netcat net-tools nmap openssl pkg-config postgresql postgresql-client postgresql-contrib python3 python3-pip python-dev python-pip screen unzip vim wget xsel zlib1g zlib1g-dev
 
+############
+## System ##
+############
+
+# Create dedicated hx user
+getent passwd ${HX} &>/dev/null || useradd -m -k /etc/skel -s /bin/bash ${HX}
+
+# Install needed system packages
+apt-get update && apt-get --yes install apt-utils autoconf avahi-daemon bison build-essential curl git git-core inotify-tool libapr1 libaprutil1 libc6-dev-i386 libcurl4-openssl-dev libffi-dev libgmp3-dev libjpeg8-dev libpcap-dev libpq-dev libreadline6-dev libsqlite3-dev libssl-dev libsvn1 libtool libxml2 libxml2-dev libxslt1-dev libyaml-dev locate nasm ncurses-dev netcat net-tools nmap openssl pkg-config postgresql postgresql-client postgresql-contrib python3 python3-pip python-dev python-pip screen unzip vim wget xsel zlib1g zlib1g-dev
+
+# Upgrade pip for both python2 and python3
 python -m pip install --upgrade pip
 python3 -m pip install --upgrade pip
+
+# Disable GNU screen startup message because it's annoying
+sed -i "s/#startup_message off/startup_message off/" /etc/screenrc
+
+
+#############
+## Hackbox ##
+#############
+
+cd /home/${HX}
+
+# Clone this repo
+rm -rf hackbox.git
+sudo -u ${HX} git clone https://github.com/quarantin/hackbox.git hackbox.git
+cd hackbox.git
+python3 ./scripts/set-hostname.sh ${HOST}
+sudo -u ${HX} python3 -m pip install -r requirements.txt
+sudo -u ${HX} python3 manage.py makemigrations
+sudo -u ${HX} python3 manage.py migrate --run-syncdb
+sudo -u ${HX} python3 ./scripts/createsuperuser.py
+
+
+##############
+## BDFProxy ##
+##############
+
+cd /home/${HX}
+
+# Clone main repo
+rm -rf bdfproxy.git
+sudo -u ${HX} git clone https://github.com/secretsquirrel/bdfproxy.git bdfproxy.git
+cd bdfproxy.git
+sudo -u ${HX} python -m pip install -r requirements.txt
+
+# TODO Fix this
+# Update BDFProxy configuration
+sudo -u ${HX} sed -i -e 's/192.168.1.168/192.168.1.32/' -e 's/192.168.1.16/192.168.1.32/' bdfproxy.cfg
+
+# Patching BDFProxy
+echo 'Patching BDFProxy...'
+sudo -u ${HX} patch -p1 < ../hackbox.git/patches/bdf-proxy-no-root.patch
+
+# Init sub-modules
+sudo -u ${HX} git submodule init && sudo -u ${HX} git submodule update
+cd bdf
+sudo -u ${HX} git pull origin master
+
+# Build osslsigncode
+cd osslsigncode
+sudo -u ${HX} ./autogen.sh && sudo -u ${HX} ./configure && sudo -u ${HX} make && make install
+
+# Install aPLib
+cd ../aPLib/example
+sudo -u ${HX} gcc -c -I../lib/elf -m32 -Wall -O2 -s -o appack.o appack.c -v && gcc -m32 -Wall -O2 -s -o appack appack.o ../lib/elf/aplib.a -v && cp ./appack /usr/bin/appack
+
 
 ################
 ## Metasploit ##
@@ -50,6 +114,9 @@ curl -L https://get.rvm.io | bash -s stable
 /bin/bash -l -c ". /etc/profile.d/rvm.sh && bundle config --global jobs $(expr $(cat /proc/cpuinfo | grep vendor_id | wc -l) - 1)"
 /bin/bash -l -c ". /etc/profile.d/rvm.sh && bundle install"
 
+cd /home/${HX}
+sudo -u ${HX} sh -c "echo '. /etc/profile.d/rvm.sh'" >> .bashrc
+
 # Symlink tools to $PATH
 for i in `ls /opt/msf/tools/*/*`; do
 	ln -f -s $i /usr/local/bin/
@@ -62,56 +129,3 @@ ln -f -s /opt/msf/msf* /usr/local/bin
 #/usr/local/bin/init.sh
 }
 
-#############
-## Hackbox ##
-#############
-
-sed -i "s/#startup_message off/startup_message off/" /etc/screenrc
-
-# Create dedicated user
-getent passwd ${HX} &>/dev/null || useradd -m -k /etc/skel -s /bin/bash ${HX}
-cd /home/${HX}
-
-# Clone this repo
-rm -rf hackbox.git
-sudo -u ${HX} git clone https://github.com/quarantin/hackbox.git hackbox.git
-cd hackbox.git
-./scripts/set-hostname.sh ${HOST}
-sudo -u ${HX} python3 -m pip install -r requirements.txt
-sudo -u ${HX} python3 manage.py makemigrations
-sudo -u ${HX} python3 manage.py migrate --run-syncdb
-cd ..
-
-##############
-## BDFProxy ##
-##############
-
-# Clone main repo
-rm -rf bdfproxy.git
-sudo -u ${HX} git clone https://github.com/secretsquirrel/bdfproxy.git bdfproxy.git
-cd bdfproxy.git
-sudo -u ${HX} python -m pip install -r requirements.txt
-
-# Patching BDFProxy
-echo 'Patching BDFProxy...'
-sudo -u ${HX} patch -p1 < ../hackbox.git/patches/bdf-proxy-no-root.patch
-
-# Init sub-modules
-sudo -u ${HX} git submodule init && sudo -u ${HX} git submodule update
-cd bdf
-sudo -u ${HX} git pull origin master
-
-# Build osslsigncode
-cd osslsigncode
-sudo -u ${HX} ./autogen.sh && sudo -u ${HX} ./configure && sudo -u ${HX} make && make install
-
-# Install aPLib
-cd ../aPLib/example
-sudo -u ${HX} gcc -c -I../lib/elf -m32 -Wall -O2 -s -o appack.o appack.c -v && gcc -m32 -Wall -O2 -s -o appack appack.o ../lib/elf/aplib.a -v && cp ./appack /usr/bin/appack
-
-cd ../../..
-
-sudo -u ${HX} sed -i -e 's/192.168.1.168/192.168.1.32/' -e 's/192.168.1.16/192.168.1.32/' bdfproxy.cfg
-
-cd
-echo ". /etc/profile.d/rvm.sh" >> .bashrc
