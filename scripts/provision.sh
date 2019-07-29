@@ -120,14 +120,15 @@ cd /home/${HX}
 gpg --keyserver hkp://pool.sks-keyservers.net:80 --recv-keys 0x409B6B1796C275462A1703113804BB82D39DC0E3 0x7D2BAF1CF37B13E2069D6956105BD0E739499BDB
 curl -sSL https://rvm.io/mpapis.asc | gpg --import
 curl -L https://get.rvm.io | bash -s stable 
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm install 2.6.2"
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm requirements"
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm install 2.6.3"
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && rvm use 2.6.3 --default"
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && gem install bundler"
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && which bundle"
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && bundle config --global jobs $(expr $(cat /proc/cpuinfo | grep vendor_id | wc -l) - 1)"
-/bin/bash -l -c ". /etc/profile.d/rvm.sh && bundle install"
+. /etc/profile.d/rvm.sh
+#rvm install 2.6.2
+rvm requirements
+rvm install 2.6.3
+rvm use 2.6.3 --default
+gem install bundler
+which bundle
+bundle config --global jobs $(expr $(cat /proc/cpuinfo | grep vendor_id | wc -l) - 1)
+sudo -u ${HX} bundle install
 
 sh -c "echo '. /etc/profile.d/rvm.sh'" >> .bashrc
 
