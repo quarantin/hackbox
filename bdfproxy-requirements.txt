@@ -1,0 +1,4 @@
+mitmproxy=0.17
+configobj  
+capstone
+pefile
